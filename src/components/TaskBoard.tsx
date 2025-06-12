@@ -8,8 +8,22 @@ import { Plus } from 'lucide-react';
 import TaskCard from './TaskCard';
 import TaskForm from './TaskForm';
 import TaskFiltersComponent from './TaskFilters';
-import { useTaskStore } from '../store/taskStore';
 import { Task, TaskFormData, TaskStatus } from '../types';
+import { useAppDispatch, useAppSelector } from '../hooks/useStore';
+import {
+  addTask,
+  updateTask,
+  deleteTask,
+  updateTaskStatus,
+  setFilters,
+  setSort,
+} from '../store/slices/taskSlice';
+import {
+  selectAllTasks,
+  selectFilters,
+  selectSort,
+  selectTasksByStatus,
+} from '../store/selectors/taskSelectors';
 
 const COLUMNS: { id: TaskStatus; title: string; color: string }[] = [
   { id: 'To Do', title: 'To Do', color: 'border-gray-200' },
@@ -18,19 +32,6 @@ const COLUMNS: { id: TaskStatus; title: string; color: string }[] = [
 ];
 
 const TaskBoard: React.FC = () => {
-  const {
-    tasks,
-    filters,
-    sort,
-    addTask,
-    updateTask,
-    deleteTask,
-    updateTaskStatus,
-    setFilters,
-    setSort,
-    getTasksByStatus,
-  } = useTaskStore();
-
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
@@ -48,7 +49,7 @@ const TaskBoard: React.FC = () => {
     }
 
     const newStatus = destination.droppableId as TaskStatus;
-    updateTaskStatus(draggableId, newStatus);
+    handleUpdateTaskStatus(draggableId, newStatus);
   };
 
   const handleCreateTask = (taskData: TaskFormData) => {
@@ -56,18 +57,38 @@ const TaskBoard: React.FC = () => {
     setIsFormOpen(false);
   };
 
-  const handleUpdateTask = (taskData: TaskFormData) => {
-    if (editingTask) {
-      updateTask(editingTask.id, taskData);
-      setEditingTask(null);
-    }
+  const tasks = useAppSelector(selectAllTasks);
+  const filters = useAppSelector(selectFilters);
+  const sort = useAppSelector(selectSort);
+  const dispatch = useAppDispatch();
+
+  // Replace direct function calls with dispatch
+  const handleAddTask = (taskData: TaskFormData) => {
+    dispatch(addTask(taskData));
   };
 
-  const handleDeleteTask = () => {
-    if (deletingTaskId) {
-      deleteTask(deletingTaskId);
-      setDeletingTaskId(null);
-    }
+  const handleUpdateTask = (id: string, taskData: Partial<TaskFormData>) => {
+    dispatch(updateTask({ id, taskData }));
+  };
+
+  const handleDeleteTask = (id: string) => {
+    dispatch(deleteTask(id));
+  };
+
+  const handleUpdateTaskStatus = (id: string, status: Task['status']) => {
+    dispatch(updateTaskStatus({ id, status }));
+  };
+
+  const handleSetFilters = (newFilters: Partial<typeof filters>) => {
+    dispatch(setFilters(newFilters));
+  };
+
+  const handleSetSort = (newSort: typeof sort) => {
+    dispatch(setSort(newSort as { field: "createdAt" | "priority" | "dueDate"; direction: "asc" | "desc" }));
+  };
+
+  const getTasksByStatusList = (status: Task['status']) => {
+    return useAppSelector(state => selectTasksByStatus(state, status));
   };
 
   const handleClearFilters = () => {
@@ -88,7 +109,7 @@ const TaskBoard: React.FC = () => {
       {/* Filters */}
       <TaskFiltersComponent
         filters={filters}
-        sort={sort}
+        sort={sort as { field: "createdAt" | "priority" | "dueDate"; direction: "asc" | "desc" }}
         onFiltersChange={setFilters}
         onSortChange={setSort}
         onClearFilters={handleClearFilters}
@@ -98,7 +119,7 @@ const TaskBoard: React.FC = () => {
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {COLUMNS.map((column) => {
-            const columnTasks = getTasksByStatus(column.id);
+            const columnTasks = getTasksByStatusList(column.id);
 
             return (
               <Card key={column.id} className={`${column.color}`}>
@@ -175,7 +196,7 @@ const TaskBoard: React.FC = () => {
           {editingTask && (
             <TaskForm
               task={editingTask}
-              onSubmit={handleUpdateTask}
+              onSubmit={(data) => handleUpdateTask(editingTask.id, data)}
               onCancel={() => setEditingTask(null)}
             />
           )}
@@ -193,7 +214,7 @@ const TaskBoard: React.FC = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteTask} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction onClick={() => deletingTaskId && handleDeleteTask(deletingTaskId)} className="bg-red-600 hover:bg-red-700">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

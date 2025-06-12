@@ -20,7 +20,7 @@ const TaskFiltersComponent: React.FC<TaskFiltersProps> = ({
   onSortChange,
   onClearFilters,
 }) => {
-  const hasActiveFilters = filters.status || filters.priority || filters.search;
+  const hasActiveFilters = filters.status ?? filters.priority ?? filters.search;
 
   return (
     <div className="space-y-4 p-4 bg-gray-50 rounded-lg">

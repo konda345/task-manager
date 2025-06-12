@@ -5,7 +5,7 @@ import { Recipe, RecipeResponse } from '../types';
 const fetchRecipes = async (search?: string): Promise<Recipe[]> => {
   let url = 'https://www.themealdb.com/api/json/v1/1/search.php?s=';
   
-  if (search && search.trim()) {
+  if (search?.trim()) {
     url += encodeURIComponent(search.trim());
   } else {
     url += 'chicken';
@@ -30,8 +30,8 @@ export const useRecipeIngredients = (recipe: Recipe): string[] => {
     const ingredient = recipe[`strIngredient${i}`];
     const measure = recipe[`strMeasure${i}`];
     
-    if (ingredient && ingredient.trim()) {
-      const fullIngredient = measure && measure.trim() 
+    if (ingredient?.trim()) {
+      const fullIngredient = measure?.trim()
         ? `${measure.trim()} ${ingredient.trim()}`
         : ingredient.trim();
       ingredients.push(fullIngredient);
