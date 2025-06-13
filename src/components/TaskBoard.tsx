@@ -19,7 +19,6 @@ import {
   setSort,
 } from '../store/slices/taskSlice';
 import {
-  selectAllTasks,
   selectFilters,
   selectSort,
   selectTasksByStatus,
@@ -53,22 +52,18 @@ const TaskBoard: React.FC = () => {
   };
 
   const handleCreateTask = (taskData: TaskFormData) => {
-    addTask(taskData);
+    dispatch(addTask(taskData));
     setIsFormOpen(false);
   };
 
-  const tasks = useAppSelector(selectAllTasks);
   const filters = useAppSelector(selectFilters);
   const sort = useAppSelector(selectSort);
   const dispatch = useAppDispatch();
 
-  // Replace direct function calls with dispatch
-  const handleAddTask = (taskData: TaskFormData) => {
-    dispatch(addTask(taskData));
-  };
 
   const handleUpdateTask = (id: string, taskData: Partial<TaskFormData>) => {
     dispatch(updateTask({ id, taskData }));
+    setEditingTask(null);
   };
 
   const handleDeleteTask = (id: string) => {
@@ -92,7 +87,8 @@ const TaskBoard: React.FC = () => {
   };
 
   const handleClearFilters = () => {
-    setFilters({});
+    dispatch(setFilters({ search: undefined, status: undefined, priority: undefined }));
+
   };
 
   return (
@@ -110,8 +106,8 @@ const TaskBoard: React.FC = () => {
       <TaskFiltersComponent
         filters={filters}
         sort={sort as { field: "createdAt" | "priority" | "dueDate"; direction: "asc" | "desc" }}
-        onFiltersChange={setFilters}
-        onSortChange={setSort}
+        onFiltersChange={handleSetFilters}
+        onSortChange={handleSetSort}
         onClearFilters={handleClearFilters}
       />
 

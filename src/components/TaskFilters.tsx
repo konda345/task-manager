@@ -22,6 +22,7 @@ const TaskFiltersComponent: React.FC<TaskFiltersProps> = ({
 }) => {
   const hasActiveFilters = filters.status ?? filters.priority ?? filters.search;
 
+
   return (
     <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
       <div className="flex flex-col md:flex-row gap-4">
@@ -38,16 +39,16 @@ const TaskFiltersComponent: React.FC<TaskFiltersProps> = ({
 
         {/* Status Filter */}
         <Select
-          value={filters.status || ''}
-          onValueChange={(value: TaskStatus | '') => 
-            onFiltersChange({ status: value || undefined })
+          value={filters.status || 'all'}
+          onValueChange={(value: TaskStatus | 'all') => 
+            onFiltersChange({ status: value === 'all' ? undefined : value })
           }
         >
           <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=" ">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="To Do">To Do</SelectItem>
             <SelectItem value="In Progress">In Progress</SelectItem>
             <SelectItem value="Done">Done</SelectItem>
@@ -56,16 +57,17 @@ const TaskFiltersComponent: React.FC<TaskFiltersProps> = ({
 
         {/* Priority Filter */}
         <Select
-          value={filters.priority || ''}
-          onValueChange={(value: TaskPriority | '') => 
-            onFiltersChange({ priority: value || undefined })
+          value={filters.priority || "all"}
+          onValueChange={(value: TaskPriority | 'all') =>
+            onFiltersChange({ priority: value === 'all' ? undefined : value })
           }
+          
         >
           <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Filter by priority" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value=" ">All Priorities</SelectItem>
+            <SelectItem value="all">All Priorities</SelectItem>
             <SelectItem value="Low">Low</SelectItem>
             <SelectItem value="Medium">Medium</SelectItem>
             <SelectItem value="High">High</SelectItem>

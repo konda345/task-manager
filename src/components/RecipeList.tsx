@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Search, ChefHat, Clock, Users } from 'lucide-react';
+import { Search, ChefHat } from 'lucide-react';
 import { useRecipes, useRecipeIngredients } from '../hooks/useRecipes';
 import { Recipe } from '../types';
 
@@ -25,7 +25,6 @@ const RecipeList: React.FC = () => {
 
   const { data: recipes, isLoading, error } = useRecipes(debouncedSearch);
 
-  console.log('Recipes:', recipes);
 
   const RecipeDetails: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
     const ingredients = useRecipeIngredients(recipe);

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
-import { CheckSquare, ChefHat, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { navigation } from '../store/data/navigationList';
+import { ActiveTab } from '../types';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
-
-type ActiveTab = 'tasks' | 'recipes';
 
 interface LayoutState {
   activeTab: ActiveTab;
@@ -22,20 +21,7 @@ const Layout: React.FC<LayoutProps & LayoutState> = ({
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const navigation = [
-    {
-      id: 'tasks' as ActiveTab,
-      name: 'Task Manager',
-      icon: CheckSquare,
-      description: 'Manage your tasks and projects',
-    },
-    {
-      id: 'recipes' as ActiveTab,
-      name: 'Recipe Collection',
-      icon: ChefHat,
-      description: 'Discover delicious recipes',
-    },
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50">
