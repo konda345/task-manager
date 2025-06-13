@@ -12,6 +12,7 @@ export interface Task {
 
 export type TaskStatus = 'To Do' | 'In Progress' | 'Done';
 export type TaskPriority = 'Low' | 'Medium' | 'High';
+export type ActiveTab = 'tasks' | 'recipes';
 
 export interface TaskFormData {
   title: string;
